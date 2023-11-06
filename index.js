@@ -1,6 +1,6 @@
 const express = require('express')
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const app = express()
 const port = process.env.PORT || 5000
@@ -29,6 +29,13 @@ async function run() {
     const Hotalcollection = client.db('HotalDB').collection('Booked')
     app.get('/api/v1/booking',async(req,res)=>{
       const result = await Hotalcollection.find().toArray()
+      res.send(result)
+    })
+    app.get('/api/v1/booking/:id',async(req,res)=>{
+      console.log(req.params.id)
+      const id = req.params.id
+      const qurey = {_id : new ObjectId(id)}
+      const result = await Hotalcollection.findOne(qurey)
       res.send(result)
     })
 
