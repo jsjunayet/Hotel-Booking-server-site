@@ -88,6 +88,20 @@ async function run() {
       const result = await myBookingCollection.deleteOne(qurey)
       res.send(result)
     })
+    app.patch('/api/v1/mybook/update/:id',async(req,res)=>{
+      const id = req.params.id;
+      const query = {_id:new ObjectId(id)}
+      const update = req.body
+      const updatedoc ={
+        $set:{
+          startDate: update
+        }
+      }
+      const result = await myBookingCollection.updateOne(query,updatedoc)
+      res.send(result)
+      
+
+    })
 // jwt token api
 app.post('/jwt',async(req,res)=>{
   const email = req.body
