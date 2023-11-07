@@ -1,11 +1,12 @@
 const express = require('express')
 const cors = require('cors');
 const jwt = require('jsonwebtoken')
+const cookieparser = require("cookie-parser")
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const app = express()
 const port = process.env.PORT || 5000
-
+app.use(cookieparser())
 app.use(cors({
   origin:['http://localhost:5173'],
   credentials:true
@@ -24,6 +25,22 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   }
 });
+const verify =(req,res,next)=>{
+  const token = req.cookies?.token
+  // console.log("ttotot",token)
+  if(!token)
+  {
+    return res.status(401).send({message:'unauthorized access'})
+  }
+  jwt.verify(token,process.env.ACCESS_TOKEN,(err,decoded)=>{
+    if(err){
+      return res.status(401).send({message:'unauthorized access'})
+    }
+    req.user = decoded;
+    next()
+  })
+  next()
+}
 
 async function run() {
   try {
@@ -36,7 +53,7 @@ async function run() {
       res.send(result)
     })
     app.get('/api/v1/booking/:id',async(req,res)=>{
-      console.log(req.params.id)
+      
       const id = req.params.id
       const qurey = {_id : new ObjectId(id)}
       const result = await Hotalcollection.findOne(qurey)
