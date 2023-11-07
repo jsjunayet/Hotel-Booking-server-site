@@ -81,6 +81,13 @@ async function run() {
       const result = await myBookingCollection.find(query).toArray()
       res.send(result)
     })
+    app.delete('/api/v1/mybook/:id',async(req,res)=>{
+      const id = req.params.id;
+      console.log(id)
+      const qurey = {_id:new ObjectId(id)}
+      const result = await myBookingCollection.deleteOne(qurey)
+      res.send(result)
+    })
 // jwt token api
 app.post('/jwt',async(req,res)=>{
   const email = req.body
