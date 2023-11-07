@@ -48,6 +48,7 @@ async function run() {
     await client.connect();
     // Send a ping to confirm a successful connection
     const Hotalcollection = client.db('HotalDB').collection('Booked')
+    const myBookingCollection = client.db('HotalDB').collection('mybooked')
     app.get('/api/v1/booking',async(req,res)=>{
       const result = await Hotalcollection.find().toArray()
       res.send(result)
@@ -57,6 +58,27 @@ async function run() {
       const id = req.params.id
       const qurey = {_id : new ObjectId(id)}
       const result = await Hotalcollection.findOne(qurey)
+      res.send(result)
+    })
+    app.get('/booknow/:id',async(req,res)=>{
+      const id = req.params.id
+      const qurey = {_id : new ObjectId(id)}
+      const result = await Hotalcollection.findOne(qurey)
+      res.send(result)
+    })
+    app.post('/api/v1/mybook',async(req,res)=>{
+      const curse = req.body
+      const result = await myBookingCollection.insertOne(curse)
+      res.send(result)
+    })
+    app.get('/api/v1/mybook',async(req,res)=>{
+      let query = {};
+      if(req.query?.email)
+      {
+        query = {email: req.query.email}
+      }
+      console.log('email',query)
+      const result = await myBookingCollection.find(query).toArray()
       res.send(result)
     })
 // jwt token api
