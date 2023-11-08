@@ -94,7 +94,7 @@ async function run() {
       const update = req.body
       const updatedoc ={
         $set:{
-          startDate: update
+          startDate: update.date
         }
       }
       const result = await myBookingCollection.updateOne(query,updatedoc)
