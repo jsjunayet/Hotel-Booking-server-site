@@ -39,7 +39,6 @@ const verify =(req,res,next)=>{
     req.user = decoded;
     next()
   })
-  next()
 }
 
 async function run() {
@@ -61,31 +60,53 @@ async function run() {
       const result = await Hotalcollection.findOne(qurey)
       res.send(result)
     })
+    app.get('/api/v1/review',async(req,res)=>{
+      const result =await reviewCollection.find().toArray()
+      res.send(result)
+    })
     app.get('/booknow/:id',async(req,res)=>{
-      console.log(req.user)
       const id = req.params.id
       const qurey = {_id : new ObjectId(id)}
       const result = await Hotalcollection.findOne(qurey)
       res.send(result)
     })
-    app.post('/api/v1/mybook',async(req,res)=>{
+    app.post('/api/v1/mybook',verify,async(req,res)=>{
+      if(req.body.email!== req.user.email)
+      {
+        return res.status(403).send({message:'forbidden access'})
+      }
       const curse = req.body
       const result = await myBookingCollection.insertOne(curse)
       res.send(result)
     })
-    app.get('/api/v1/mybook',async(req,res)=>{
+    app.get('/api/v1/mybook',verify,async(req,res)=>{
+      console.log(req.query.email)
+      console.log('decoder',req.user.email)
+      if(req.query?.email!==req.user.email)
+      {
+        return res.status(403).send({message:'forbidden access'})
+      }
       let query = {};
       if(req.query?.email)
       {
         query = {email: req.query.email}
       }
-      console.log('email',query)
       const result = await myBookingCollection.find(query).toArray()
+      res.send(result)
+    })
+    app.get('/api/v1/reviews',async(req,res)=>{
+      console.log(req.query?.roomid)
+      let query = {};
+      if(req.query?.roomid)
+      {
+        query = {roomid: req.query?.roomid}
+      }
+      
+      const result = await reviewCollection.find(query).toArray()
       res.send(result)
     })
     app.delete('/api/v1/mybook/:id',async(req,res)=>{
       const id = req.params.id;
-      console.log(id)
       const qurey = {_id:new ObjectId(id)}
       const result = await myBookingCollection.deleteOne(qurey)
       res.send(result)
