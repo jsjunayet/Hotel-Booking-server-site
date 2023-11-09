@@ -8,7 +8,7 @@ const app = express()
 const port = process.env.PORT || 5000
 app.use(cookieparser())
 app.use(cors({
-  origin:['https://adorable-horse-3c6729.netlify.app',],
+  origin:['https://adorable-horse-3c6729.netlify.app'],
   credentials:true
 }))
 app.use(express.json())
@@ -159,7 +159,7 @@ app.post('/logout',async(req,res)=>{
           .send({ success: true })
 })
     
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
