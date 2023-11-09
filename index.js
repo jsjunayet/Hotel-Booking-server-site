@@ -8,7 +8,7 @@ const app = express()
 const port = process.env.PORT || 5000
 app.use(cookieparser())
 app.use(cors({
-  origin:['http://localhost:5173'],
+  origin:['https://adorable-horse-3c6729.netlify.app',],
   credentials:true
 }))
 app.use(express.json())
@@ -44,7 +44,7 @@ const verify =(req,res,next)=>{
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
     // Send a ping to confirm a successful connection
     const Hotalcollection = client.db('HotalDB').collection('Booked')
     const myBookingCollection = client.db('HotalDB').collection('mybooked')
@@ -134,17 +134,29 @@ async function run() {
 app.post('/jwt',async(req,res)=>{
   const email = req.body
   const token =jwt.sign(email, process.env.ACCESS_TOKEN, { expiresIn: '1h' });
-  res
-  .cookie('token',token,{
-    httpOnly:true,
-    secure:true,
-    sameSite:'none'
-  })
-  .send({success:true})
+  // res
+  // .cookie('token',token,{
+  //   httpOnly:true,
+  //   secure:true,
+  //   sameSite:'none'
+  // })
+  // .send({success:true})
+  res.cookie('token', token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+        })
+        .send({ success: true })
 })
 app.post('/logout',async(req,res)=>{
   const user = req.body;
-  res.clearCookie('token',{maxAge:0}).send({success:true})
+  // res.clearCookie('token',{maxAge:0}).send({success:true})
+  res.clearCookie('token', {
+            maxAge: 0,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+          })
+          .send({ success: true })
 })
     
     await client.db("admin").command({ ping: 1 });
